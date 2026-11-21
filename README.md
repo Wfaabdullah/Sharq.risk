@@ -1,6 +1,6 @@
 # SHARQ.RISK
 
-SHARQ.RISK is a bilingual (English/Arabic) insurance risk analytics portfolio application. It demonstrates an insurance-focused interface and transparent calculations using a deterministic synthetic dataset. It is not connected to an insurer, a live data source, or a backend service.
+SHARQ.RISK is a bilingual (English/Arabic) insurance analytics demonstration with a fixed-seed synthetic portfolio, browser-local aggregate-file analysis, transparent hypothetical claims stress calculations, KPI methodology, professional reference context, and report exports. It is not connected to an insurer, live source, or backend service, and its synthetic portfolio does not represent the Saudi market.
 
 ## Run locally
 
@@ -11,40 +11,41 @@ pnpm install
 pnpm dev
 ```
 
-The Vite development server prints its local address. Useful checks are:
+Useful checks:
 
 ```bash
 pnpm typecheck
 pnpm test
 pnpm build
-```
-
-`pnpm build` creates the normal root-hosted static site in `dist/`.
-
-## Application areas
-
-The working demo includes an Executive Overview with portfolio KPIs, trends, calculated evidence, line/region/period filters, and a summary CSV export; Insurance Analytics with a line-level table and chart drill-in; Claims Intelligence with volume, frequency, severity, paid/outstanding/incurred figures, trends, and a largest-claims list; Underwriting Intelligence with transparent review thresholds; Customer Segmentation with exposure, claim-share, frequency, severity, loss ratio, and result; a Dataset Explorer with schema previews and basic quality checks; and a Methodology page with formulas, inputs, interpretation, and limitations.
-
-Actuarial modeling, catastrophe scenarios, reinsurance calculations, Investment & ALM, financial-document extraction, and report generation are deliberately marked as planned. They do not return simulated analytical results or imply completed engines.
-
-## Synthetic data and methodology
-
-The generator uses a fixed seed to create fictional customers, policies, claims, line-specific exposure records, monthly underwriting expenses, illustrative quota-share assumptions, and investment assets. Details of the model and its limitations are in [`docs/data-model.md`](docs/data-model.md).
-
-All money is illustrative USD. Values are not Saudi market data or actual results from any insurer. Loss ratio is incurred claims divided by earned premium; expense ratio is underwriting expenses divided by earned premium; combined ratio is their sum; underwriting result is earned premium less incurred claims and expenses. Paid claims plus outstanding reserves reconcile to incurred claims. Claim frequency is reported claims divided by exposed policy-years. These are demonstration definitions, not actuarially validated production metrics or accounting advice.
-
-## GitHub Pages
-
-The Pages-specific build uses the repository subpath `/Sharq.risk/` and can be produced with:
-
-```bash
 pnpm build:pages
 ```
 
-The `.github/workflows/deploy-pages.yml` workflow builds and deploys the static site after pushes to `main` or `feat/sharq-risk-foundation`, and supports manual dispatch. It runs typecheck, tests, and the Pages build before uploading the artifact. The published URL is `https://wfaabdullah.github.io/Sharq.risk/` once GitHub Pages is enabled for this repository and its deployment succeeds.
+`pnpm build` creates the root-hosted static site in `dist/`. `pnpm build:pages` builds for GitHub Pages at `/Sharq.risk/`.
 
-The project-site URL follows GitHub's `owner.github.io/repository` convention. The workflow uses GitHub Actions as the publishing source, following the [official Pages publishing-source guide](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) and [custom workflow guide](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+## Product areas
 
-## Technical stack
+- **Executive Overview and Insurance Analytics:** portfolio totals, supported ratios, trends, line/region summaries, filters, evidence notes, and CSV export.
+- **Data Workspace:** upload one aggregate portfolio CSV or `.xlsx` (first worksheet only; max 15 MB), preview original rows, map columns, validate supported fields, inspect findings, activate valid rows, and export transformed valid rows as CSV/XLSX. Files are parsed in the browser and are not sent to SHARQ.RISK servers. Activation is explicit; missing measures remain unavailable.
+- **Scenario Lab:** hypothetical aggregate claims arithmetic, `incurred × (1 + frequency change) × (1 + severity change)`, with earned premium and expenses held fixed. This is not a forecast, probability estimate, solvency assessment, or actuarial model.
+- **Reports & exports:** active-dataset reports can be downloaded as CSV or XLSX; browser print-to-PDF includes context, period, identity/status, results, definitions, assumptions, limitations, and generation date. Unsupported report types are disabled by empty results.
+- **Methodology and References:** bilingual formula/field/period/interpretation/limitation notes linked to official and professional sources. The sources give context only and do not validate application formulas, code, outputs, or regulatory compliance.
 
-React 18, TypeScript, Vite, Recharts, Lucide, and Vitest. The application is a static client-side frontend; it currently has no authentication, backend, persistent user data, external API keys, or real-time ingestion.
+## Upload scope and limitations
+
+The importer supports a single aggregate portfolio file with insurance line, period, earned premium, and incurred claims as required fields; optional columns enable GWP, ceded premium/NWP, paid and outstanding amounts, expenses, claim count, exposure, and region analysis. It accepts CSV and `.xlsx` only. Legacy `.xls`, macros, multi-sheet joins, multi-file datasets, persistent dataset management, and any upload to a server are not implemented. Multiple calendar years are accepted but month-of-year trend charts are suppressed to avoid mixing years.
+
+The upload path does not classify or join separate policies, claims, customers, expenses, reinsurance, investments, Motor/Health/Property detail files, and does not check cross-file referential integrity or provide claim-level/customer-segment analysis. These requirements remain incomplete. Invalid rows remain visible in the original preview and are excluded only from the calculated view; duplicate detection needs a mapped identifier. Validation is limited to implemented row-level checks and is not an accounting, actuarial, regulatory, or underwriting audit.
+
+## Synthetic data and calculations
+
+The demo generator uses fixed seed `20251121` and creates fictional customers, policies, claims, line-specific examples, expenses, reinsurance assumptions, and investment assets. See [`docs/data-model.md`](docs/data-model.md). Money is illustrative USD. The dashboard does not represent a real company or Saudi market results. Ratios use aggregated amounts; simplified earning and exposure conventions are not production accounting or actuarial methods. Zero-denominator handling and other application conventions are documented, not validated by the reference library.
+
+Actuarial reserving, IBNR, catastrophe modeling, treaty/reinsurance outcomes, investment risk/ALM, document extraction, and claim-level uploaded-data analysis remain unavailable or marked planned.
+
+## GitHub Pages
+
+The Pages workflow at `.github/workflows/deploy-pages.yml` runs typecheck, tests, and `pnpm build:pages` after pushes to `main` or `feat/sharq-risk-foundation`, then deploys the static artifact. The public URL is `https://wfaabdullah.github.io/Sharq.risk/`; a code push alone does not prove deployment success, so verify the Actions run and public site after changes.
+
+## Stack
+
+React 18, TypeScript, Vite, Recharts, Lucide, SheetJS, and Vitest. The application is a client-side static frontend with no authentication, backend, persistent user data, or real-time ingestion.
