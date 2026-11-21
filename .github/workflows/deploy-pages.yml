@@ -17,6 +17,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
     steps:
       - name: Check out source
         uses: actions/checkout@v6
@@ -32,6 +35,8 @@ jobs:
           cache: pnpm
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Typecheck
