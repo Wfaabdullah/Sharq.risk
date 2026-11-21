@@ -67,8 +67,8 @@ export function aggregate(records: DemoRecord[]): Metrics {
 export function filterRecords(records: DemoRecord[], range: number, line: Line | 'all', region: Region | 'all') {
   return records.filter((row) => row.month >= 12 - range && (line === 'all' || row.line === line) && (region === 'all' || row.region === region));
 }
-export function byLine(records: DemoRecord[]) { return lines.map((line) => ({ line, ...aggregate(records.filter((row) => row.line === line)) })); }
-export function byRegion(records: DemoRecord[]) { return regions.map((region) => ({ region, ...aggregate(records.filter((row) => row.region === region)) })); }
+export function byLine(records: DemoRecord[]) { return lines.filter((line) => records.some((row) => row.line === line)).map((line) => ({ line, ...aggregate(records.filter((row) => row.line === line)) })); }
+export function byRegion(records: DemoRecord[]) { return regions.filter((region) => records.some((row) => row.region === region)).map((region) => ({ region, ...aggregate(records.filter((row) => row.region === region)) })); }
 export function byMonth(records: DemoRecord[]) {
   return Array.from(new Set(records.map((row) => row.month))).sort((a, b) => a - b).map((month) => {
     const m = aggregate(records.filter((row) => row.month === month));

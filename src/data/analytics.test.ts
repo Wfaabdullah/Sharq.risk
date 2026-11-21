@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { aggregate, demoDataset, demoRecords, filterRecords, segmentSummary } from './demo';
+import { aggregate, byLine, byRegion, demoDataset, demoRecords, filterRecords, segmentSummary } from './demo';
 import { generateDemoDataset } from './generateDemoDataset';
 import { messages, t } from '../i18n';
 
@@ -49,6 +49,14 @@ describe('SHARQ.RISK synthetic data foundation', () => {
   it('keeps paid and outstanding claims distinct and reconciled in aggregates', () => {
     const result = aggregate(demoRecords);
     expect(result.paid + result.outstanding).toBeCloseTo(result.incurred, 2);
+  });
+
+  it('does not synthesize zero-only line or region categories for sparse uploaded records', () => {
+    const sparse = demoRecords.filter((row) => row.line === 'Motor' && row.region === 'West');
+    expect(byLine(sparse).map((row) => row.line)).toEqual(['Motor']);
+    expect(byRegion(sparse).map((row) => row.region)).toEqual(['West']);
+    expect(byLine([])).toEqual([]);
+    expect(byRegion([])).toEqual([]);
   });
 
   it('filters periods, lines, and regions and returns segment calculations', () => {
